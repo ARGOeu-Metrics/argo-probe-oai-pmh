@@ -6,7 +6,7 @@ from argo_probe_oai_pmh.exceptions import XMLException
 from lxml import etree
 
 
-def namespace(element):
+def get_namespace(element):
     m = re.match(r"\{.*\}", element.tag)
     return m.group(0) if m else ""
 
@@ -19,11 +19,17 @@ def xml_schema_validation(xml, schema):
     return xml_schema.validate(tree.getroot())
 
 
+def parse_xml(xml):
+    tree = etree.parse(io.BytesIO(xml))
+    root = tree.getroot()
+    namespace = get_namespace(root)
+
+    return tree, root, namespace
+
+
 class XMLContent:
     def __init__(self, xml, verb="Identify"):
-        self.tree = etree.parse(io.BytesIO(xml))
-        self.root = self.tree.getroot()
-        self.namespace = namespace(self.root)
+        self.tree, self.root, self.namespace = parse_xml(xml)
         self.verb = verb
         self.xml_string = xml
         self.elements = self._read()
