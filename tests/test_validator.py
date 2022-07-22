@@ -58,7 +58,7 @@ class ValidatorTests(unittest.TestCase):
         mock_print.assert_called_once_with(
             "OK - XML is valid.\n"
             "HTTP status OK.\n"
-            "Content type text/xml; charset=UTF-8\n"
+            "Content type text/xml\n"
             "Content XML valid.\n"
             "XML complies with OAI-PMH XML Schema http://www.openarchives.org"
             "/OAI/2.0/OAI-PMH.xsd\n"

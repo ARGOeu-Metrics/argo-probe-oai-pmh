@@ -31,8 +31,8 @@ class Validator:
             content = XMLContent(xml=xml)
             self.nagios.set_ok("HTTP status OK.")
 
-            if content_type == "text/xml; charset=UTF-8":
-                self.nagios.set_ok("Content type text/xml; charset=UTF-8")
+            if "text/xml" in content_type:
+                self.nagios.set_ok("Content type text/xml")
 
                 msgs = content.validate()
 
