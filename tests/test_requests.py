@@ -22,6 +22,7 @@ error_xml_string = \
 class MockResponse:
     def __init__(self, data, status_code):
         self.content = data
+        self.headers = {"content-type": "text/xml; charset=UTF-8"}
         self.status_code = status_code
         self.reason = "SERVER ERROR"
 
@@ -46,8 +47,9 @@ class RequestsTests(unittest.TestCase):
     @patch("requests.get")
     def test_fetch_XML(self, mock_get):
         mock_get.side_effect = mock_get_response_ok
-        data = fetchXML("mock_url", timeout=30)
+        data, content_type = fetchXML("mock_url", timeout=30)
         self.assertEqual(data, ok_xml_string)
+        self.assertEqual(content_type, "text/xml; charset=UTF-8")
         mock_get.assert_called_once_with("mock_url", timeout=30)
 
     @patch("requests.get")

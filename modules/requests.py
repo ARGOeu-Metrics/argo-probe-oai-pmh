@@ -23,6 +23,7 @@ def fetchData(url, timeout):
 def fetchXML(url, timeout):
     try:
         response = fetchData(url, timeout)
+        content_type = response.headers["content-type"]
         response.raise_for_status()
 
         tree, root, namespace = parse_xml(response.content)
@@ -38,7 +39,7 @@ def fetchXML(url, timeout):
     except RequestException as e:
         raise XMLRequestException(msg=e, title=url)
 
-    return response.content
+    return response.content, content_type
 
 
 def fetchXMLSchema(url, timeout):
