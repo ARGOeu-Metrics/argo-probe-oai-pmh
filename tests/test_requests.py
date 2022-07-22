@@ -64,17 +64,6 @@ class RequestsTests(unittest.TestCase):
         )
 
     @patch("requests.get")
-    def test_fetch_XML_ok_with_error(self, mock_get):
-        mock_get.side_effect = mock_get_response_ok_with_error
-        with self.assertRaises(XMLRequestException) as context:
-            fetchXML("mock_url", timeout=30)
-        mock_get.assert_called_once_with("mock_url", timeout=30)
-        self.assertEqual(
-            context.exception.__str__(),
-            "Error fetching XML mock_url: badVerb: Invalid verb: bla"
-        )
-
-    @patch("requests.get")
     def test_fetch_XMLSchema(self, mock_get):
         mock_get.side_effect = mock_get_response_ok
         data = fetchXMLSchema("mock_url", timeout=30)

@@ -26,16 +26,6 @@ def fetchXML(url, timeout):
         content_type = response.headers["content-type"]
         response.raise_for_status()
 
-        tree, root, namespace = parse_xml(response.content)
-        for item in root.iter():
-            if item.tag == f"{namespace}error":
-                msg = f"{item.text}"
-
-                if item.get("code"):
-                    msg = f"{item.get('code')}: {item.text}"
-
-                raise XMLRequestException(msg=msg, title=url)
-
     except RequestException as e:
         raise XMLRequestException(msg=e, title=url)
 
