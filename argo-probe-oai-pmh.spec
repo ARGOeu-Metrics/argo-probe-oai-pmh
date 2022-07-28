@@ -42,5 +42,5 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Jul 22 2022 Katarina Zailac <kzailac@gmail.com> - 0.1.0-1
+* Thu Jul 28 2022 Katarina Zailac <katarina.zailac@gmail.com> - 0.1.0-1
 - ARGO-3940 Create probe for OAI-PMH
