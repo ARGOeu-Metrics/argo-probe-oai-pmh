@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+import argparse
+
+from argo_probe_oai_pmh.validator import Validator
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        "Probe that checks the validity of OAI-PMH response", add_help=False
+    )
+    required = parser.add_argument_group('required arguments')
+    optional = parser.add_argument_group('optional arguments')
+    required.add_argument(
+        "-u", "--url", dest="url", type=str, required=True, help="endpoint URL"
+    )
+    required.add_argument(
+        "-t", "--timeout", dest="timeout", type=float, default=30,
+        help="timeout"
+    )
+    optional.add_argument(
+        "-v", "--verbose", dest="verbose", action="store_true",
+        default=False, help="verbose output"
+    )
+    optional.add_argument(
+        '-h', '--help', action='help', default=argparse.SUPPRESS,
+        help='Show this help message and exit'
+    )
+
+    args = parser.parse_args()
+
+    validator = Validator(
+        url=args.url, timeout=args.timeout, verbose=args.verbose
+    )
+    validator.validate()
+
+
+if __name__ == "__main__":
+    main()
