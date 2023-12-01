@@ -1,7 +1,7 @@
 import sys
 
 from argo_probe_oai_pmh.exceptions import XMLSchemaRequestException, \
-    XMLRequestException
+    XMLRequestException, XMLException
 from argo_probe_oai_pmh.nagios import NagiosResponse
 from argo_probe_oai_pmh.requests import fetchXMLSchema, fetchXML
 from argo_probe_oai_pmh.xml import XMLContent, xml_schema_validation
@@ -79,6 +79,9 @@ class Validator:
             )
 
         except XMLRequestException as e:
+            self.nagios.set_critical(e)
+
+        except XMLException as e:
             self.nagios.set_critical(e)
 
         output = self.nagios.get_message()
