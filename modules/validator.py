@@ -3,7 +3,7 @@ import sys
 from argo_probe_oai_pmh.exceptions import XMLSchemaRequestException, \
     XMLRequestException, XMLException
 from argo_probe_oai_pmh.nagios import NagiosResponse
-from argo_probe_oai_pmh.requests import fetchXMLSchema, fetchXML
+from argo_probe_oai_pmh.data import fetchXMLSchema, fetchXML
 from argo_probe_oai_pmh.xml import XMLContent, xml_schema_validation
 
 

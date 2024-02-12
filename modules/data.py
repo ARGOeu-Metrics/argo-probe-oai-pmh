@@ -1,7 +1,6 @@
 import requests
 from argo_probe_oai_pmh.exceptions import RequestException, \
     XMLRequestException, XMLSchemaRequestException
-from argo_probe_oai_pmh.xml import parse_xml
 
 
 def fetchData(url, timeout):

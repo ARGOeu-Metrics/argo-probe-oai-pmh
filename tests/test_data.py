@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from argo_probe_oai_pmh.exceptions import XMLRequestException, \
     RequestException, XMLSchemaRequestException
-from argo_probe_oai_pmh.requests import fetchXML, fetchXMLSchema
+from argo_probe_oai_pmh.data import fetchXML, fetchXMLSchema
 
 from test_xml import ok_xml_string
 
