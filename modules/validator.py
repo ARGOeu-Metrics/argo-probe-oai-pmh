@@ -45,7 +45,7 @@ class Validator:
                 else:
                     self.output.set_ok("Content XML valid")
 
-                xml2 = self._xml4schema()[0]
+                xml2 = self._xml4schema()
                 schema = self._schema()[0]
 
                 if xml_schema_validation(xml=xml2[0], schema=schema):
