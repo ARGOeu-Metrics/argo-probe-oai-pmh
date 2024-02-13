@@ -38,7 +38,7 @@ class XMLContent:
         if self.verb not in [
             item.tag[len(self.namespace):] for item in self.root
         ]:
-            raise XMLException(f"Missing '{self.verb}' element.")
+            raise XMLException(f"Missing '{self.verb}' element")
 
         if element == "adminEmail":
             value = list()
@@ -104,9 +104,9 @@ class XMLContent:
 
                 except ValueError:
                     valid = False
-                    msg = f"{msg}\nInvalid element '{item}'. " \
+                    msg = f"{msg}\nInvalid element '{item}'; " \
                           f"'{item}' must be expressed at the finest " \
-                          f"granularity supported by the repository."
+                          f"granularity supported by the repository"
                     msg.strip("\n")
 
             if item == "deletedRecord":
@@ -114,8 +114,8 @@ class XMLContent:
                 allowed_values_str = ", ".join(f"'{w}'" for w in allowed_values)
                 if elements[item] not in allowed_values:
                     valid = False
-                    msg = f"{msg}\nInvalid element '{item}'. Legitimate " \
-                          f"values are {allowed_values_str}."
+                    msg = f"{msg}\nInvalid element '{item}'; legitimate " \
+                          f"values are {allowed_values_str}"
                     msg.strip("\n")
 
             if item == "granularity":
@@ -123,17 +123,17 @@ class XMLContent:
                 allowed_values_str = ", ".join(f"'{w}'" for w in allowed_values)
                 if elements[item] not in allowed_values:
                     valid = False
-                    msg = f"{msg}\nInvalid element '{item}'. Legitimate " \
-                          f"values are {allowed_values_str}."
+                    msg = f"{msg}\nInvalid element '{item}'; legitimate " \
+                          f"values are {allowed_values_str}"
                     msg.strip("\n")
 
         if len(missing_elements) == 1:
-            msg = f"Missing element '{missing_elements[0]}.\n{msg}'"
+            msg = f"Missing element '{missing_elements[0]}\n{msg}'"
             msg.strip("\n")
 
         elif len(missing_elements) > 1:
             msg_str = ", ".join(f"'{w}'" for w in missing_elements)
-            msg = f"Missing elements: {msg_str}.\n{msg}"
+            msg = f"Missing elements: {msg_str}\n{msg}"
             msg.strip("\n")
 
         if valid:
@@ -163,13 +163,13 @@ class XMLContent:
             for email in self.elements["adminEmail"]:
                 if not validate_email_address(email):
                     valid = False
-                    msg = f"{msg}\nInvalid element 'adminEmail'. " \
-                          f"Invalid email format."
+                    msg = f"{msg}\nInvalid element 'adminEmail'; " \
+                          f"invalid email format"
                     msg.strip("\n")
 
         else:
             valid = False
-            msg = f"{msg}\nMissing element 'adminEmail'."
+            msg = f"{msg}\nMissing element 'adminEmail'"
             msg.strip("\n")
 
         if valid:
