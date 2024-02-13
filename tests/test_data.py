@@ -1,9 +1,10 @@
+import datetime
 import unittest
 from unittest.mock import patch
 
 from argo_probe_oai_pmh.exceptions import XMLRequestException, \
     RequestException, XMLSchemaRequestException
-from argo_probe_oai_pmh.data import fetchXML, fetchXMLSchema
+from argo_probe_oai_pmh.data import get_xml, get_xml_schema
 
 from test_xml import ok_xml_string
 
@@ -18,10 +19,13 @@ error_xml_string = \
     b'<error code="badVerb">Invalid verb: bla</error>' \
     b'</OAI-PMH>'
 
+LEN_OK_XML_STRING = len(ok_xml_string)
+
 
 class MockResponse:
     def __init__(self, data, status_code):
         self.content = data
+        self.elapsed = datetime.timedelta(seconds=0.2794524)
         self.headers = {"content-type": "text/xml; charset=UTF-8"}
         self.status_code = status_code
         self.reason = "SERVER ERROR"
@@ -43,40 +47,48 @@ def mock_get_response_ok_with_error(*args, **kwargs):
     return MockResponse(error_xml_string, status_code=200)
 
 
-class RequestsTests(unittest.TestCase):
-    @patch("requests.get")
-    def test_fetch_XML(self, mock_get):
+class DataTests(unittest.TestCase):
+    @patch("argo_probe_oai_pmh.data.requests.get")
+    def test_get_xml(self, mock_get):
         mock_get.side_effect = mock_get_response_ok
-        data, content_type = fetchXML("mock_url", timeout=30)
+        data, content_type, perfdata = get_xml(
+            "https://mock.url.eu", timeout=30
+        )
         self.assertEqual(data, ok_xml_string)
         self.assertEqual(content_type, "text/xml; charset=UTF-8")
-        mock_get.assert_called_once_with("mock_url", timeout=30)
+        self.assertEqual(
+            perfdata, f"|time=0.279452s;size={LEN_OK_XML_STRING}B"
+        )
+        mock_get.assert_called_once_with("https://mock.url.eu", timeout=30)
 
-    @patch("requests.get")
-    def test_fetch_XML_bad_status_code(self, mock_get):
+    @patch("argo_probe_oai_pmh.data.requests.get")
+    def test_get_xml_bad_status_code(self, mock_get):
         mock_get.side_effect = mock_get_response_500
         with self.assertRaises(XMLRequestException) as context:
-            fetchXML("mock_url", timeout=30)
-        mock_get.assert_called_once_with("mock_url", timeout=30)
+            get_xml("https://mock.url.eu", timeout=30)
+        mock_get.assert_called_once_with("https://mock.url.eu", timeout=30)
         self.assertEqual(
             context.exception.__str__(),
-            "Error fetching XML mock_url: 500 SERVER ERROR"
+            "Error fetching XML https://mock.url.eu: 500 SERVER ERROR"
         )
 
-    @patch("requests.get")
-    def test_fetch_XMLSchema(self, mock_get):
+    @patch("argo_probe_oai_pmh.data.requests.get")
+    def test_get_xml_schema(self, mock_get):
         mock_get.side_effect = mock_get_response_ok
-        data = fetchXMLSchema("mock_url", timeout=30)
+        data, perfdata = get_xml_schema("https://mock.url.eu", timeout=30)
         self.assertEqual(data, ok_xml_string)
-        mock_get.assert_called_once_with("mock_url", timeout=30)
+        self.assertEqual(
+            perfdata, f"|time=0.279452s;size={LEN_OK_XML_STRING}B"
+        )
+        mock_get.assert_called_once_with("https://mock.url.eu", timeout=30)
 
-    @patch("requests.get")
-    def test_fetch_XMLSchema_bad_status_code(self, mock_get):
+    @patch("argo_probe_oai_pmh.data.requests.get")
+    def test_get_xml_schema_bad_status_code(self, mock_get):
         mock_get.side_effect = mock_get_response_500
         with self.assertRaises(XMLSchemaRequestException) as context:
-            fetchXMLSchema("mock_url", timeout=30)
-        mock_get.assert_called_once_with("mock_url", timeout=30)
+            get_xml_schema("https://mock.url.eu", timeout=30)
+        mock_get.assert_called_once_with("https://mock.url.eu", timeout=30)
         self.assertEqual(
             context.exception.__str__(),
-            "Error fetching XML schema mock_url: 500 SERVER ERROR"
+            "Error fetching XML schema https://mock.url.eu: 500 SERVER ERROR"
         )

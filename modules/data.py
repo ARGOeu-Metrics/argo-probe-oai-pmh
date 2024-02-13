@@ -3,11 +3,14 @@ from argo_probe_oai_pmh.exceptions import RequestException, \
     XMLRequestException, XMLSchemaRequestException
 
 
-def fetchData(url, timeout):
+def _get_data(url, timeout):
     try:
         response = requests.get(url, timeout=timeout)
 
-        return response
+        perfdata = (f"|time={response.elapsed.total_seconds()}s;"
+                    f"size={len(response.content)}B")
+
+        return response, perfdata
 
     except (
         requests.exceptions.HTTPError,
@@ -19,24 +22,24 @@ def fetchData(url, timeout):
         raise RequestException(e)
 
 
-def fetchXML(url, timeout):
+def get_xml(url, timeout):
     try:
-        response = fetchData(url, timeout)
+        response, perfdata = _get_data(url, timeout)
         content_type = response.headers["content-type"]
         response.raise_for_status()
 
     except RequestException as e:
         raise XMLRequestException(msg=e, title=url)
 
-    return response.content, content_type
+    return response.content, content_type, perfdata
 
 
-def fetchXMLSchema(url, timeout):
+def get_xml_schema(url, timeout):
     try:
-        response = fetchData(url, timeout)
+        response, perfdata = _get_data(url, timeout)
         response.raise_for_status()
 
-        return response.content
+        return response.content, perfdata
 
     except RequestException as e:
         raise XMLSchemaRequestException(msg=e, title=url)
