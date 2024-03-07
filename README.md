@@ -25,17 +25,17 @@ Example execution of the probe:
 
 ```
 # /usr/libexec/argo/probes/oai_pmh/check_oai_pmh -u https://dabar.srce.hr/oai?verb=Identify -t 30
-OK - XML is valid.
+OK - XML is valid|time=1.617129s;size=1347B
 ```
 
 Example execution of the probe with increased verbosity:
 
 ```
 # /usr/libexec/argo/probes/oai_pmh/check_oai_pmh -u https://dabar.srce.hr/oai?verb=Identify -t 30 -v
-OK - XML is valid.
-HTTP status OK.
+OK - XML is valid|time=1.617129s;size=1347B
+HTTP status OK
 Content type text/xml
-Content XML valid.
+Content XML valid
 XML complies with OAI-PMH XML Schema http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd
 Valid adminEmail: dabar@srce.hr
 ```

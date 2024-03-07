@@ -145,7 +145,7 @@ class XMLTests(unittest.TestCase):
 
         self.assertEqual(
             context.exception.__str__(),
-            "Error analysing XML content: Missing 'Identify' element."
+            "Error analysing XML content: Missing 'Identify' element"
         )
 
     def test_validate_ok(self):
@@ -155,35 +155,35 @@ class XMLTests(unittest.TestCase):
         xml_check = XMLContent(xml_string_missing_entries)
         self.assertEqual(
             xml_check.validate(),
-            "Missing elements: 'baseURL', 'protocolVersion'."
+            "Missing elements: 'baseURL', 'protocolVersion'"
         )
 
     def test_validate_with_invalid_earliest_datestamp(self):
         xml_check = XMLContent(xml_string_invalid_datestamp)
         self.assertEqual(
             xml_check.validate(),
-            "Invalid element 'earliestDatestamp'. "
+            "Invalid element 'earliestDatestamp'; "
             "'earliestDatestamp' must be expressed at the finest granularity "
-            "supported by the repository."
+            "supported by the repository"
         )
 
     def test_validate_with_invalid_deleted_record(self):
         xml_check = XMLContent(xml_string_invalid_deleted)
         self.assertEqual(
             xml_check.validate(),
-            "Invalid element 'deletedRecord'. Legitimate values are 'no', "
-            "'transient', 'persistent'."
+            "Invalid element 'deletedRecord'; legitimate values are 'no', "
+            "'transient', 'persistent'"
         )
 
     def test_validate_with_invalid_granularity(self):
         xml_check = XMLContent(xml_string_invalid_granularity)
         self.assertEqual(
             xml_check.validate(),
-            "Invalid element 'earliestDatestamp'. "
+            "Invalid element 'earliestDatestamp'; "
             "'earliestDatestamp' must be expressed at the finest granularity "
-            "supported by the repository.\n"
-            "Invalid element 'granularity'. Legitimate values are 'YYYY-MM-DD',"
-            " 'YYYY-MM-DDThh:mm:ssZ'."
+            "supported by the repository\n"
+            "Invalid element 'granularity'; legitimate values are 'YYYY-MM-DD',"
+            " 'YYYY-MM-DDThh:mm:ssZ'"
         )
 
     def test_get_admin_emails(self):
@@ -198,12 +198,12 @@ class XMLTests(unittest.TestCase):
     def test_validate_missing_admin_emails(self):
         xml_check = XMLContent(xml_string_missing_emails)
         self.assertEqual(
-            xml_check.validate_admin_emails(), "Missing element 'adminEmail'."
+            xml_check.validate_admin_emails(), "Missing element 'adminEmail'"
         )
 
     def test_validate_invalid_admin_emails(self):
         xml_check = XMLContent(xml_string_invalid_email)
         self.assertEqual(
             xml_check.validate_admin_emails(),
-            "Invalid element 'adminEmail'. Invalid email format."
+            "Invalid element 'adminEmail'; invalid email format"
         )
