@@ -42,6 +42,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 10 2025 Katarina Zailac <kzailac@srce.hr> - 0.3.0-1
+- AO-1033 El9 package for argo-probe-oai-pmh
 * Thu Mar 7 2024 Katarina Zailac <kzailac@srce.hr> - 0.2.0-1
 - ARGO-4471 Add performance data to argo-probe-oai-pmh
 * Thu Dec 7 2023 Katarina Zailac <kzailac@srce.hr> - 0.1.1-1
