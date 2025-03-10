@@ -2,7 +2,7 @@
 
 Summary:       ARGO probe that checks validity of OAI-PMH XML response.
 Name:          argo-probe-oai-pmh
-Version:       0.2.0
+Version:       0.3.0
 Release:       1%{?dist}
 Source0:       %{name}-%{version}.tar.gz
 License:       ASL 2.0
@@ -12,8 +12,8 @@ Prefix:        %{_prefix}
 BuildArch:     noarch
 
 BuildRequires: python3-devel
-Requires: python36-requests
-Requires: python36-lxml
+Requires: python3-requests
+Requires: python3-lxml
 
 
 %description
@@ -42,6 +42,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Mar 10 2025 Katarina Zailac <kzailac@srce.hr> - 0.3.0-1
+- AO-1033 El9 package for argo-probe-oai-pmh
 * Thu Mar 7 2024 Katarina Zailac <kzailac@srce.hr> - 0.2.0-1
 - ARGO-4471 Add performance data to argo-probe-oai-pmh
 * Thu Dec 7 2023 Katarina Zailac <kzailac@srce.hr> - 0.1.1-1
