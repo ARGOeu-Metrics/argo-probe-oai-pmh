@@ -18,6 +18,12 @@ def main():
         help="timeout"
     )
     optional.add_argument(
+        "-s", "--schema", dest="schema", type=str,
+        default="/var/spool/argo/probes/oai_pmh/OAI-PMH.xsd",
+        help="File containing XML Schema for Validating Responses to OAI-PMH "
+             "Requests (default: /var/spool/argo/probes/oai_pmh/OAI-PMH.xsd)"
+    )
+    optional.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true",
         default=False, help="verbose output"
     )
@@ -29,7 +35,10 @@ def main():
     args = parser.parse_args()
 
     validator = Validator(
-        url=args.url, timeout=args.timeout, verbose=args.verbose
+        url=args.url,
+        schema=args.schema,
+        timeout=args.timeout,
+        verbose=args.verbose
     )
     validator.validate()
 
