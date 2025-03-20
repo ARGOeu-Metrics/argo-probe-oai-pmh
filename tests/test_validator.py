@@ -5,7 +5,6 @@ from argo_probe_oai_pmh.exceptions import XMLSchemaRequestException
 from argo_probe_oai_pmh.validator import Validator
 
 XML_PERFDATA = "|time=0.234432s;size=1234567B"
-SCHEMA_PERFDATA = "|time=0.73242s;size=9876543B"
 
 
 def mock_func(*args, **kwargs):
@@ -19,10 +18,16 @@ def mock_schema_exception(*args, **kwargs):
 class ValidatorTests(unittest.TestCase):
     def setUp(self):
         self.verbose_validator = Validator(
-            url="https://mock.url.eu?Identify", timeout=30, verbose=True
+            url="https://mock.url.eu?Identify",
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd",
+            timeout=30,
+            verbose=True
         )
         self.nonverbose_validator = Validator(
-            url="https://mock.url.eu?Identify", timeout=30, verbose=False
+            url="https://mock.url.eu?Identify",
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd",
+            timeout=30,
+            verbose=False
         )
 
     @mock.patch("argo_probe_oai_pmh.validator.sys.exit")
@@ -36,7 +41,7 @@ class ValidatorTests(unittest.TestCase):
     ):
         mock_fetch_xml.return_value = (b"mock_xml", "text/xml; charset=UTF-8",
                                        XML_PERFDATA)
-        mock_fetch_schema.return_value = b"mock_xml_schema", SCHEMA_PERFDATA
+        mock_fetch_schema.return_value = b"mock_xml_schema"
         mock_schema_validation.return_value = True
         mock_print.side_effect = mock_func
         mock_exit.side_effect = mock_func
@@ -56,7 +61,7 @@ class ValidatorTests(unittest.TestCase):
             mock.call(url="https://mock.url.eu", timeout=30)
         ], any_order=True)
         mock_fetch_schema.assert_called_once_with(
-            url="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", timeout=30
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd"
         )
         mock_schema_validation.assert_called_once()
         mock_print.assert_called_once_with(
@@ -64,7 +69,7 @@ class ValidatorTests(unittest.TestCase):
             f"HTTP status OK\n"
             f"Content type text/xml\n"
             f"Content XML valid\n"
-            f"XML complies with OAI-PMH XML Schema http://www.openarchives.org"
+            f"XML complies with OAI-PMH XML Schema https://www.openarchives.org"
             f"/OAI/2.0/OAI-PMH.xsd\n"
             f"Valid adminEmail: mock@email.com"
         )
@@ -81,7 +86,7 @@ class ValidatorTests(unittest.TestCase):
     ):
         mock_fetch_xml.return_value = (b"mock_xml", "text/xml; charset=UTF-8",
                                        XML_PERFDATA)
-        mock_fetch_schema.return_value = b"mock_xml_schema", SCHEMA_PERFDATA
+        mock_fetch_schema.return_value = b"mock_xml_schema"
         mock_schema_validation.return_value = True
         mock_print.side_effect = mock_func
         mock_exit.side_effect = mock_func
@@ -101,7 +106,7 @@ class ValidatorTests(unittest.TestCase):
             mock.call(url="https://mock.url.eu", timeout=30)
         ], any_order=True)
         mock_fetch_schema.assert_called_once_with(
-            url="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", timeout=30
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd"
         )
         mock_schema_validation.assert_called_once()
         mock_print.assert_called_once_with(f"OK - XML is valid{XML_PERFDATA}")
@@ -118,7 +123,7 @@ class ValidatorTests(unittest.TestCase):
     ):
         mock_fetch_xml.return_value = (b"mock_xml", "text/xml; charset=UTF-8",
                                        XML_PERFDATA)
-        mock_fetch_schema.return_value = b"mock_xml_schema", SCHEMA_PERFDATA
+        mock_fetch_schema.return_value = b"mock_xml_schema"
         mock_schema_validation.return_value = False
         mock_print.side_effect = mock_func
         mock_exit.side_effect = mock_func
@@ -139,14 +144,14 @@ class ValidatorTests(unittest.TestCase):
             mock.call(url="https://mock.url.eu", timeout=30)
         ], any_order=True)
         mock_fetch_schema.assert_called_once_with(
-            url="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", timeout=30
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd"
         )
         mock_schema_validation.assert_called_once()
         mock_print.assert_called_once_with(
             f"CRITICAL - Content XML not valid - Missing element 'test'"
             f"{XML_PERFDATA}\n"
             f"XML does not comply with OAI-PMH XML Schema "
-            f"http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
+            f"https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
         )
         mock_exit.assert_called_once_with(2)
 
@@ -161,7 +166,7 @@ class ValidatorTests(unittest.TestCase):
     ):
         mock_fetch_xml.return_value = (b"mock_xml", "text/xml; charset=UTF-8",
                                        XML_PERFDATA)
-        mock_fetch_schema.return_value = b"mock_xml_schema", SCHEMA_PERFDATA
+        mock_fetch_schema.return_value = b"mock_xml_schema"
         mock_schema_validation.return_value = False
         mock_print.side_effect = mock_func
         mock_exit.side_effect = mock_func
@@ -182,14 +187,14 @@ class ValidatorTests(unittest.TestCase):
             mock.call(url="https://mock.url.eu", timeout=30)
         ], any_order=True)
         mock_fetch_schema.assert_called_once_with(
-            url="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", timeout=30
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd"
         )
         mock_schema_validation.assert_called_once()
         mock_print.assert_called_once_with(
             f"CRITICAL - Content XML not valid - Missing element 'test'"
             f"{XML_PERFDATA}\n"
             f"XML does not comply with OAI-PMH XML Schema "
-            f"http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
+            f"https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
         )
         mock_exit.assert_called_once_with(2)
 
@@ -224,13 +229,13 @@ class ValidatorTests(unittest.TestCase):
             mock.call(url="https://mock.url.eu", timeout=30)
         ], any_order=True)
         mock_fetch_schema.assert_called_once_with(
-            url="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", timeout=30
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd"
         )
         self.assertFalse(mock_schema_validation.called)
         mock_print.assert_called_once_with(
-            f"CRITICAL - Unable to fetch OAI-PMH XML Schema "
-            f"http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd - "
-            f"schema compliance not tested: Error fetching XML schema : "
+            f"CRITICAL - Unable to read OAI-PMH XML Schema "
+            f"/var/spool/argo/probe/oai_pmh/schema.xsd - "
+            f"schema compliance not tested: Error reading XML schema: "
             f"500 SERVER ERROR{XML_PERFDATA}"
         )
         mock_exit.assert_called_once_with(2)
@@ -266,13 +271,13 @@ class ValidatorTests(unittest.TestCase):
             mock.call(url="https://mock.url.eu", timeout=30)
         ], any_order=True)
         mock_fetch_schema.assert_called_once_with(
-            url="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", timeout=30
+            schema="/var/spool/argo/probe/oai_pmh/schema.xsd"
         )
         self.assertFalse(mock_schema_validation.called)
         mock_print.assert_called_once_with(
-            f"CRITICAL - Unable to fetch OAI-PMH XML Schema "
-            f"http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd - "
-            f"schema compliance not tested: Error fetching XML schema : "
+            f"CRITICAL - Unable to read OAI-PMH XML Schema "
+            f"/var/spool/argo/probe/oai_pmh/schema.xsd - "
+            f"schema compliance not tested: Error reading XML schema: "
             f"500 SERVER ERROR{XML_PERFDATA}"
         )
         mock_exit.assert_called_once_with(2)

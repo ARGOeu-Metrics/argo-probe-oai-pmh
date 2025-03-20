@@ -2,6 +2,8 @@ import requests
 from argo_probe_oai_pmh.exceptions import RequestException, \
     XMLRequestException, XMLSchemaRequestException
 
+SCHEMA_URL = "https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
+
 
 def _get_data(url, timeout):
     try:
