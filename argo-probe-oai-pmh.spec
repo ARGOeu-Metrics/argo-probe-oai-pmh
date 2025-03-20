@@ -29,6 +29,7 @@ ARGO probe that checks validity of OAI-PMH XML response.
 
 %install
 %{py3_install "--record=INSTALLED_FILES" }
+install --directory --mode 755 $RPM_BUILD_ROOT/%{_localstatedir}/spool/argo/probes/oai_pmh/
 
 
 %clean
@@ -39,6 +40,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %dir %{python3_sitelib}/%{underscore %{name}}/
 %{python3_sitelib}/%{underscore %{name}}/*.py
+%dir %{_localstatedir}/spool/argo/probes/oai_pmh/
+%config(noreplace) %{_localstatedir}/spool/argo/probes/oai_pmh/OAI-PMH.xsd
 
 
 %changelog
