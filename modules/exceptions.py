@@ -21,4 +21,4 @@ class XMLRequestException(MyException):
 
 class XMLSchemaRequestException(MyException):
     def __str__(self):
-        return f"Error fetching XML schema {self.title}: {str(self.msg)}"
+        return f"Error reading XML schema: {str(self.msg)}"

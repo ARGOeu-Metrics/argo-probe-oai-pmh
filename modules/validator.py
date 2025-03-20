@@ -1,6 +1,6 @@
 import sys
 
-from argo_probe_oai_pmh.data import get_xml_schema, get_xml
+from argo_probe_oai_pmh.data import get_xml_schema, get_xml, SCHEMA_URL
 from argo_probe_oai_pmh.exceptions import XMLSchemaRequestException, \
     XMLRequestException, XMLException
 from argo_probe_oai_pmh.output import Output
@@ -8,15 +8,15 @@ from argo_probe_oai_pmh.xml import XMLContent, xml_schema_validation
 
 
 class Validator:
-    def __init__(self, url, timeout, verbose):
+    def __init__(self, url, timeout, schema, verbose):
         self.url = url
         self.timeout = timeout
         self.output = Output()
-        self.schema = "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
+        self.schema = schema
         self.verbose = verbose
 
     def _schema(self):
-        return get_xml_schema(url=self.schema, timeout=self.timeout)
+        return get_xml_schema(schema=self.schema)
 
     def _xml(self):
         return get_xml(url=self.url, timeout=self.timeout)
@@ -46,17 +46,17 @@ class Validator:
                     self.output.set_ok("Content XML valid")
 
                 xml2 = self._xml4schema()
-                schema = self._schema()[0]
+                schema = self._schema()
 
                 if xml_schema_validation(xml=xml2[0], schema=schema):
                     self.output.set_ok(
-                        f"XML complies with OAI-PMH XML Schema {self.schema}"
+                        f"XML complies with OAI-PMH XML Schema {SCHEMA_URL}"
                     )
 
                 else:
                     self.output.set_critical(
                         f"XML does not comply with OAI-PMH XML Schema "
-                        f"{self.schema}"
+                        f"{SCHEMA_URL}"
                     )
 
                 if content.validate_admin_emails():
@@ -75,7 +75,7 @@ class Validator:
 
         except XMLSchemaRequestException as e:
             self.output.set_critical(
-                f"Unable to fetch OAI-PMH XML Schema {self.schema} - "
+                f"Unable to read OAI-PMH XML Schema {self.schema} - "
                 f"schema compliance not tested: {e}"
             )
 

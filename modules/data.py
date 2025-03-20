@@ -2,6 +2,8 @@ import requests
 from argo_probe_oai_pmh.exceptions import RequestException, \
     XMLRequestException, XMLSchemaRequestException
 
+SCHEMA_URL = "https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"
+
 
 def _get_data(url, timeout):
     try:
@@ -34,12 +36,13 @@ def get_xml(url, timeout):
     return response.content, content_type, perfdata
 
 
-def get_xml_schema(url, timeout):
+def get_xml_schema(schema):
     try:
-        response, perfdata = _get_data(url, timeout)
-        response.raise_for_status()
+        with open(schema, "rb") as f:
+            data = f.read()
 
-        return response.content, perfdata
+        return data
 
-    except RequestException as e:
-        raise XMLSchemaRequestException(msg=e, title=url)
+    except FileNotFoundError:
+        raise XMLSchemaRequestException(f"File {schema} does not exist")
+
