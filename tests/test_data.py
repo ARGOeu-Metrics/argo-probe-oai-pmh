@@ -3,6 +3,8 @@ import os
 import unittest
 from unittest.mock import patch
 
+import requests
+from argo_probe_oai_pmh.data import fetch_xml_schema
 from argo_probe_oai_pmh.data import get_xml, get_xml_schema
 from argo_probe_oai_pmh.exceptions import XMLRequestException, \
     RequestException, XMLSchemaRequestException
@@ -33,7 +35,9 @@ class MockResponse:
 
     def raise_for_status(self):
         if not str(self.status_code).startswith("2"):
-            raise RequestException(f"{self.status_code} {self.reason}")
+            raise requests.exceptions.RequestException(
+                f"{self.status_code} {self.reason}"
+            )
 
 
 def mock_get_response_ok(*args, **kwargs):
@@ -92,4 +96,44 @@ class DataTests(unittest.TestCase):
         self.assertEqual(
             context.exception.__str__(),
             "Error reading XML schema: File nonexisting.xsd does not exist"
+        )
+
+    @patch("argo_probe_oai_pmh.data.requests.get")
+    def test_fetch_xml_schema(self, mock_get):
+        mock_get.side_effect = mock_get_response_ok
+        data = fetch_xml_schema(
+            url="https://mock.url.eu",
+            user_agent="Mozilla/5.0 (X11; Linux x86_64)",
+            timeout=30
+        )
+        self.assertEqual(data, ok_xml_string)
+        mock_get.assert_called_once_with(
+            "https://mock.url.eu",
+            headers={
+                "accept": "text/html,application/xhtml+xml",
+                "user-agent": "Mozilla/5.0 (X11; Linux x86_64)",
+            },
+            timeout=30
+        )
+
+    @patch("argo_probe_oai_pmh.data.requests.get")
+    def test_fetch_xml_schema_bad_status_code(self, mock_get):
+        mock_get.side_effect = mock_get_response_500
+        with self.assertRaises(RequestException) as context:
+            fetch_xml_schema(
+                url="https://mock.url.eu",
+                user_agent="Mozilla/5.0 (X11; Linux x86_64)",
+                timeout=30
+            )
+        mock_get.assert_called_once_with(
+            "https://mock.url.eu",
+            headers={
+                "accept": "text/html,application/xhtml+xml",
+                "user-agent": "Mozilla/5.0 (X11; Linux x86_64)",
+            },
+            timeout=30
+        )
+        self.assertEqual(
+            context.exception.__str__(),
+            "Error fetching XML schema https://mock.url.eu: 500 SERVER ERROR"
         )

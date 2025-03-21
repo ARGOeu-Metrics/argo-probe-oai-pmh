@@ -1,8 +1,9 @@
 import sys
 
-from argo_probe_oai_pmh.data import get_xml_schema, get_xml, SCHEMA_URL
+from argo_probe_oai_pmh.data import get_xml_schema, get_xml, SCHEMA_URL, \
+    fetch_xml_schema, DEFAULT_SCHEMA_FILE_PATH
 from argo_probe_oai_pmh.exceptions import XMLSchemaRequestException, \
-    XMLRequestException, XMLException
+    XMLRequestException, XMLException, RequestException
 from argo_probe_oai_pmh.output import Output
 from argo_probe_oai_pmh.xml import XMLContent, xml_schema_validation
 
@@ -94,4 +95,41 @@ class Validator:
         else:
             print("\n".join(output))
 
+        sys.exit(self.output.get_code())
+
+
+class CompareXMLSchemas:
+    def __init__(self, url, user_agent, timeout):
+        self.url = url
+        self.user_agent = user_agent
+        self.timeout = timeout
+        self.output = Output(ok_msg="XML schema is up-to-date")
+
+    def _fetch_schema(self):
+        return fetch_xml_schema(
+            url=self.url, user_agent=self.user_agent, timeout=self.timeout
+        )
+
+    @staticmethod
+    def _read_schema(schema):
+        return get_xml_schema(schema=schema)
+
+    def compare(self, filepath=DEFAULT_SCHEMA_FILE_PATH):
+        try:
+            web_schema = self._fetch_schema()
+            file_schema = self._read_schema(schema=filepath)
+
+            if web_schema != file_schema:
+                self.output.set_warning("XML schema is outdated - updating")
+
+                with open(filepath, "wb") as f:
+                    f.write(web_schema)
+
+        except (RequestException, XMLSchemaRequestException) as e:
+            self.output.set_critical(str(e))
+
+        except Exception as e:
+            self.output.set_unknown(str(e))
+
+        print(self.output.get_message())
         sys.exit(self.output.get_code())

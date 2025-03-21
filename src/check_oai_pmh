@@ -2,7 +2,7 @@
 import argparse
 
 from argo_probe_oai_pmh.validator import Validator
-
+from argo_probe_oai_pmh.data import DEFAULT_SCHEMA_FILE_PATH
 
 def main():
     parser = argparse.ArgumentParser(
@@ -20,8 +20,8 @@ def main():
     optional.add_argument(
         "-s", "--schema", dest="schema", type=str,
         default="/var/spool/argo/probes/oai_pmh/OAI-PMH.xsd",
-        help="File containing XML Schema for Validating Responses to OAI-PMH "
-             "Requests (default: /var/spool/argo/probes/oai_pmh/OAI-PMH.xsd)"
+        help=f"File containing XML Schema for Validating Responses to OAI-PMH "
+             f"Requests (default: {DEFAULT_SCHEMA_FILE_PATH})"
     )
     optional.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true",

@@ -25,6 +25,7 @@ setup(
     packages=['argo_probe_oai_pmh'],
     data_files=[
         ('/usr/libexec/argo/probes/oai_pmh', ['src/check_oai_pmh']),
+        ('/usr/libexec/argo/probes/oai_pmh', ['src/check_xml_schema']),
         ('/var/spool/argo/probes/oai_pmh', ['files/OAI-PMH.xsd'])
     ]
 )
