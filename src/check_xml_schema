@@ -12,14 +12,14 @@ def main():
     required = parser.add_argument_group("required arguments")
     optional = parser.add_argument_group("optional arguments")
     required.add_argument(
-        "-u", "--url", dest="url", type=str, default=SCHEMA_URL,
-        help=f"URL of the XML schema (default: {SCHEMA_URL})"
-    )
-    required.add_argument(
         "-a", "--user-agent", dest="user_agent", type=str, required=True,
         help="user-agent entry for the request header"
     )
-    required.add_argument(
+    optional.add_argument(
+        "-u", "--url", dest="url", type=str, default=SCHEMA_URL,
+        help=f"URL of the XML schema (default: {SCHEMA_URL})"
+    )
+    optional.add_argument(
         "-t", "--timeout", dest="timeout", type=int, default=30,
         help="timeout"
     )
