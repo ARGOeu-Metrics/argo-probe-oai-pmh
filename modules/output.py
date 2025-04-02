@@ -4,10 +4,10 @@ class Output:
     CRITICAL = 2
     UNKNOWN = 3
 
-    def __init__(self):
+    def __init__(self, ok_msg="XML is valid"):
         self._code = self.OK
         self._status = ["OK", "WARNING", "CRITICAL", "UNKNOWN"]
-        self._ok_msg = "XML is valid"
+        self._ok_msg = ok_msg
         self._warning_msg = ""
         self._critical_msg = ""
         self._unknown_msg = ""

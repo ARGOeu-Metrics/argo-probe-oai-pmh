@@ -1,10 +1,13 @@
 import datetime
+import os
 import unittest
 from unittest.mock import patch
 
+import requests
+from argo_probe_oai_pmh.data import fetch_xml_schema
+from argo_probe_oai_pmh.data import get_xml, get_xml_schema
 from argo_probe_oai_pmh.exceptions import XMLRequestException, \
     RequestException, XMLSchemaRequestException
-from argo_probe_oai_pmh.data import get_xml, get_xml_schema
 
 from test_xml import ok_xml_string
 
@@ -32,7 +35,9 @@ class MockResponse:
 
     def raise_for_status(self):
         if not str(self.status_code).startswith("2"):
-            raise RequestException(f"{self.status_code} {self.reason}")
+            raise requests.exceptions.RequestException(
+                f"{self.status_code} {self.reason}"
+            )
 
 
 def mock_get_response_ok(*args, **kwargs):
@@ -48,6 +53,15 @@ def mock_get_response_ok_with_error(*args, **kwargs):
 
 
 class DataTests(unittest.TestCase):
+    def setUp(self):
+        self.schema_file = os.path.join(os.getcwd(), "oai-pmh.xsd")
+        with open(self.schema_file, "wb") as f:
+            f.write(ok_xml_string)
+
+    def tearDown(self):
+        if os.path.exists(self.schema_file):
+            os.remove(self.schema_file)
+
     @patch("argo_probe_oai_pmh.data.requests.get")
     def test_get_xml(self, mock_get):
         mock_get.side_effect = mock_get_response_ok
@@ -72,22 +86,53 @@ class DataTests(unittest.TestCase):
             "Error fetching XML https://mock.url.eu: 500 SERVER ERROR"
         )
 
-    @patch("argo_probe_oai_pmh.data.requests.get")
-    def test_get_xml_schema(self, mock_get):
-        mock_get.side_effect = mock_get_response_ok
-        data, perfdata = get_xml_schema("https://mock.url.eu", timeout=30)
+    def test_get_xml_schema(self):
+        data = get_xml_schema(schema=self.schema_file)
         self.assertEqual(data, ok_xml_string)
+
+    def test_get_xml_schema_if_file_nonexisting(self):
+        with self.assertRaises(XMLSchemaRequestException) as context:
+            get_xml_schema(schema="nonexisting.xsd")
         self.assertEqual(
-            perfdata, f"|time=0.279452s;size={LEN_OK_XML_STRING}B"
+            context.exception.__str__(),
+            "Error reading XML schema: File nonexisting.xsd does not exist"
         )
-        mock_get.assert_called_once_with("https://mock.url.eu", timeout=30)
 
     @patch("argo_probe_oai_pmh.data.requests.get")
-    def test_get_xml_schema_bad_status_code(self, mock_get):
+    def test_fetch_xml_schema(self, mock_get):
+        mock_get.side_effect = mock_get_response_ok
+        data = fetch_xml_schema(
+            url="https://mock.url.eu",
+            user_agent="Mozilla/5.0 (X11; Linux x86_64)",
+            timeout=30
+        )
+        self.assertEqual(data, ok_xml_string)
+        mock_get.assert_called_once_with(
+            "https://mock.url.eu",
+            headers={
+                "accept": "text/html,application/xhtml+xml",
+                "user-agent": "Mozilla/5.0 (X11; Linux x86_64)",
+            },
+            timeout=30
+        )
+
+    @patch("argo_probe_oai_pmh.data.requests.get")
+    def test_fetch_xml_schema_bad_status_code(self, mock_get):
         mock_get.side_effect = mock_get_response_500
-        with self.assertRaises(XMLSchemaRequestException) as context:
-            get_xml_schema("https://mock.url.eu", timeout=30)
-        mock_get.assert_called_once_with("https://mock.url.eu", timeout=30)
+        with self.assertRaises(RequestException) as context:
+            fetch_xml_schema(
+                url="https://mock.url.eu",
+                user_agent="Mozilla/5.0 (X11; Linux x86_64)",
+                timeout=30
+            )
+        mock_get.assert_called_once_with(
+            "https://mock.url.eu",
+            headers={
+                "accept": "text/html,application/xhtml+xml",
+                "user-agent": "Mozilla/5.0 (X11; Linux x86_64)",
+            },
+            timeout=30
+        )
         self.assertEqual(
             context.exception.__str__(),
             "Error fetching XML schema https://mock.url.eu: 500 SERVER ERROR"

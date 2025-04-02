@@ -1,0 +1,43 @@
+#!/usr/bin/python3
+import argparse
+
+from argo_probe_oai_pmh.data import SCHEMA_URL
+from argo_probe_oai_pmh.validator import CompareXMLSchemas
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        "Internal probe that keeps OAI-PMH.xsd file up-to-date", add_help=False
+    )
+    required = parser.add_argument_group("required arguments")
+    optional = parser.add_argument_group("optional arguments")
+    required.add_argument(
+        "-a", "--user-agent", dest="user_agent", type=str, required=True,
+        help="user-agent entry for the request header"
+    )
+    optional.add_argument(
+        "-u", "--url", dest="url", type=str, default=SCHEMA_URL,
+        help=f"URL of the XML schema (default: {SCHEMA_URL})"
+    )
+    optional.add_argument(
+        "-t", "--timeout", dest="timeout", type=int, default=30,
+        help="timeout"
+    )
+    optional.add_argument(
+        '-h', '--help', action='help', default=argparse.SUPPRESS,
+        help='Show this help message and exit'
+    )
+
+    args = parser.parse_args()
+
+    comparison = CompareXMLSchemas(
+        url=args.url,
+        user_agent=args.user_agent,
+        timeout=args.timeout
+    )
+
+    comparison.compare()
+
+
+if __name__ == "__main__":
+    main()
